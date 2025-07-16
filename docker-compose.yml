@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: movies-redis
+    ports:
+      - "6279:6379"
+
+  opensearch:
+    image: opensearchproject/opensearch:2.14.0
+    platform: linux/amd64
+    container_name: movies-opensearch
+    environment:
+      - OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m
+    ports:
+      - "8200:9200"
+    volumes:
+      - osdata:/usr/share/opensearch/data
+      - ./opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ./init-opensearch.sh:/usr/local/bin/init-opensearch.sh
+      - ./movies.json:/usr/local/bin/movies.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    entrypoint: ["/bin/bash", "-c", "opensearch-plugin remove opensearch-security && chmod +x /usr/local/bin/init-opensearch.sh && opensearch & sleep 30 && /usr/local/bin/init-opensearch.sh && tail -f /dev/null"]
+
+volumes:
+  osdata:
