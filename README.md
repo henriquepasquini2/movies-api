@@ -15,7 +15,7 @@ pip install poetry
 make install
 ```
 
-### 4. Create a `settings.ini` file in the project root.
+### 4. Create a `.env` file in the project root.
 ### 5. Copy the contents of the `.env.template` file to the `.env` file
 ### 6. Fill in the settings in the `.env` file as needed
 #### Example `.env`:
